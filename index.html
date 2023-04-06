@@ -1,57 +1,105 @@
-<!DOCTYPE html>
+
+DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Besin Değerleri Hesaplama</title>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <title>Food Calculator</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
 <body>
-  <h1>Besin Değerleri Hesaplama</h1>
-  <form id="food-form">
-    <label for="süt-yoğurt">Süt-Yoğurt:</label>
-    <input type="number" id="süt-yoğurt" name="süt-yoğurt"><br><br>
-    <label for="et-yumurta">Et-Yumurta:</label>
-    <input type="number" id="et-yumurta" name="et-yumurta"><br><br>
-    <label for="tahıl">Tahıl:</label>
-    <input type="number" id="tahıl" name="tahıl"><br><br>
-    <label for="sebze">Sebze:</label>
-    <input type="number" id="sebze" name="sebze"><br><br>
-    <label for="meyve">Meyve:</label>
-    <input type="number" id="meyve" name="meyve"><br><br>
-    <label for="yağ">Yağ:</label>
-    <input type="number" id="yağ" name="yağ"><br><br>
-    <label for="kuruyemiş">Kuruyemiş:</label>
-    <input type="number" id="kuruyemiş" name="kuruyemiş"><br><br>
-  </form> 
-  <button onclick="calculate()">Hesapla</button>
+    <div class="container">
+        <h1>Food Calculator</h1>
+        <form id="food-form">
+            <div class="form-group">
+                <label for="süt-yoğurt">Süt-Yoğurt:</label>
+                <input type="number" class="form-control" id="süt-yoğurt" placeholder="Enter value">
+            </div>
+            <div class="form-group">
+                <label for="et-yumurta">Et-Yumurta:</label>
+                <input type="number" class="form-control" id="et-yumurta" placeholder="Enter value">
+            </div>
+            <div class="form-group">
+                <label for="tahıl">Tahıl:</label>
+                <input type="number" class="form-control" id="tahıl" placeholder="Enter value">
+            </div>
+            <div class="form-group">
+                <label for="sebze">Sebze:</label>
+                <input type="number" class="form-control" id="sebze" placeholder="Enter value">
+            </div>
+            <div class="form-group">
+                <label for="meyve">Meyve:</label>
+                <input type="number" class="form-control" id="meyve" placeholder="Enter value">
+            </div>
+            <div class="form-group">
+                <label for="yağ">Yağ:</label>
+                <input type="number" class="form-control" id="yağ" placeholder="Enter value">
+            </div>
+            <div class="form-group">
+                <label for="kuruyemiş">Kuruyemiş:</label>
+                <input type="number" class="form-control" id="kuruyemiş" placeholder="Enter value">
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+        <div id="results"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+        const foodGroups = {
+          "süt-yoğurt": [9, 6, 6],
+          "et-yumurta": [0, 6, 5],
+          "tahıl": [15, 2, 0],
+          "sebze": [6, 2, 0],
+          "meyve": [15, 0, 0],
+          "yağ": [0, 0, 5],
+          "kuruyemiş": [0, 2, 5]
+        };
 
-  <script>
-    function calculate() {
-      const foodGroups = {
-        'süt-yoğurt': [9, 6, 6],
-        'et-yumurta': [0, 6, 5],
-        'tahıl': [15, 2, 0],
-        'sebze': [6, 2, 0],
-        'meyve': [15, 0, 0],
-        'yağ': [0, 0, 5],
-        'kuruyemiş': [0, 2, 5]
-      };
-      const caloriesPerGram = {
-        'karbonhidrat': 4,
-        'protein': 4,
-        'yağ': 9
-      };
-      let totalCalories = 0;
-      let totalNutrients = [0, 0, 0];
-      for (let group in foodGroups) {
-        let amount = document.getElementById(group).value;
-        let nutrients = foodGroups[group].map((x,i) => x * amount);
-        totalNutrients = totalNutrients.map((x,i) => x + nutrients[i]);
-      }
-      totalCalories = totalNutrients.reduce((acc,x,i) => acc + x * Object.values(caloriesPerGram)[i],0);
-      let percentages = totalNutrients.map(x => Math.round(x * Object.values(caloriesPerGram)[Object.keys(caloriesPerGram).indexOf(Object.keys(caloriesPerGram)[totalNutrients.indexOf(x)])] / totalCalories *100));
-      alert(`Toplam kalori: ${totalCalories} kcal Karbonhidrat: %${percentages[0]} Protein: %${percentages[1]} Yağ: %${percentages[2]}`);
-    }
-  </script>
+        const multipliers = [4, 4, 9];
 
+        $("#food-form").submit(function(event) {
+            event.preventDefault();
+            let totalCarbs = 0;
+            let totalProtein = 0;
+            let totalFat = 0;
+            let totalCalories = 0;
+            let resultsHTML = "";
+
+            for (const foodGroup in foodGroups) {
+                const value = parseInt($(`#${foodGroup}`).val()) || 0;
+                const [carbsCoeff, proteinCoeff, fatCoeff] = foodGroups[foodGroup];
+                const carbs = carbsCoeff * value;
+                const protein = proteinCoeff * value;
+                const fat = fatCoeff * value;
+                const calories = carbs * multipliers[0] + protein * multipliers[1] + fat * multipliers[2];
+                totalCarbs += carbs;
+                totalProtein += protein;
+                totalFat += fat;
+                totalCalories += calories;
+                resultsHTML += `<h3>${foodGroup} için değerler:</h3>`;
+                resultsHTML += `<p>Karbonhidrat: ${carbs}</p>`;
+                resultsHTML += `<p>Protein: ${protein}</p>`;
+                resultsHTML += `<p>Yağ: ${fat}</p>`;
+                resultsHTML += `<p>Kalori: ${calories}</p>`;
+            }
+
+            resultsHTML += `<h2>Toplam Değerler:</h2>`;
+            resultsHTML += `<p>Toplam Karbonhidrat: ${totalCarbs}</p>`;
+            resultsHTML += `<p>Toplam Protein: ${totalProtein}</p>`;
+            resultsHTML += `<p>Toplam Yağ: ${totalFat}</p>`;
+            resultsHTML += `<p>Toplam Kalori: ${totalCalories}</p>`;
+
+            resultsHTML += `<h2>Yüzdeler:</h2>`;
+            resultsHTML += `<p>Karbonhidrat Yüzdesi: ${((totalCarbs * multipliers[0]) / totalCalories) * 100}%</p>`;
+            resultsHTML += `<p>Protein Yüzdesi: ${((totalProtein * multipliers[1]) / totalCalories) * 100}%</p>`;
+            resultsHTML += `<p>Yağ Yüzdesi: ${((totalFat * multipliers[2]) / totalCalories) * 100}%</p>`;
+
+            $("#results").html(resultsHTML);
+        });
+    </script>
 </body>
 </html>
+
+
+
+
