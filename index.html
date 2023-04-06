@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Besin Değerleri Hesaplama</title>
+</head>
+<body>
+  <h1>Besin Değerleri Hesaplama</h1>
+  <form id="food-form">
+    <label for="süt-yoğurt">Süt-Yoğurt:</label>
+    <input type="number" id="süt-yoğurt" name="süt-yoğurt"><br><br>
+    <label for="et-yumurta">Et-Yumurta:</label>
+    <input type="number" id="et-yumurta" name="et-yumurta"><br><br>
+    <label for="tahıl">Tahıl:</label>
+    <input type="number" id="tahıl" name="tahıl"><br><br>
+    <label for="sebze">Sebze:</label>
+    <input type="number" id="sebze" name="sebze"><br><br>
+    <label for="meyve">Meyve:</label>
+    <input type="number" id="meyve" name="meyve"><br><br>
+    <label for="yağ">Yağ:</label>
+    <input type="number" id="yağ" name="yağ"><br><br>
+    <label for="kuruyemiş">Kuruyemiş:</label>
+    <input type="number" id="kuruyemiş" name="kuruyemiş"><br><br>
+  </form> 
+  <button onclick="calculate()">Hesapla</button>
+
+  <script>
+    function calculate() {
+      const foodGroups = {
+        'süt-yoğurt': [9, 6, 6],
+        'et-yumurta': [0, 6, 5],
+        'tahıl': [15, 2, 0],
+        'sebze': [6, 2, 0],
+        'meyve': [15, 0, 0],
+        'yağ': [0, 0, 5],
+        'kuruyemiş': [0, 2, 5]
+      };
+      const caloriesPerGram = {
+        'karbonhidrat': 4,
+        'protein': 4,
+        'yağ': 9
+      };
+      let totalCalories = 0;
+      let totalNutrients = [0, 0, 0];
+      for (let group in foodGroups) {
+        let amount = document.getElementById(group).value;
+        let nutrients = foodGroups[group].map((x,i) => x * amount);
+        totalNutrients = totalNutrients.map((x,i) => x + nutrients[i]);
+      }
+      totalCalories = totalNutrients.reduce((acc,x,i) => acc + x * Object.values(caloriesPerGram)[i],0);
+      let percentages = totalNutrients.map(x => Math.round(x * Object.values(caloriesPerGram)[Object.keys(caloriesPerGram).indexOf(Object.keys(caloriesPerGram)[totalNutrients.indexOf(x)])] / totalCalories *100));
+      alert(`Toplam kalori: ${totalCalories} kcal Karbonhidrat: %${percentages[0]} Protein: %${percentages[1]} Yağ: %${percentages[2]}`);
+    }
+  </script>
+
+</body>
+</html>
